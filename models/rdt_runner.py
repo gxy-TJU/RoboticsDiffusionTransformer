@@ -23,6 +23,9 @@ class RDTRunner(
                  img_pos_embed_config=None, dtype=torch.bfloat16):
         super(RDTRunner, self).__init__()
         # Create diffusion model
+        #lang_token_dim = 768
+        #print('lang_token_dim', lang_token_dim)
+        
         hidden_size = config['rdt']['hidden_size']
         self.model = RDT(
             output_dim=action_dim,

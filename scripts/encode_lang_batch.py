@@ -4,15 +4,17 @@ import json
 import torch
 import yaml
 from tqdm import tqdm
-
+import sys
+sys.path.append('/home/gxy/Desktop/RoboticsDiffusionTransformer')
 from models.multimodal_encoder.t5_encoder import T5Embedder
-
+import torch.nn.functional as F
 
 GPU = 0
-MODEL_PATH = "google/t5-v1_1-xxl"
+#MODEL_PATH = "google/t5-v1_1-xxl"
+MODEL_PATH = "google/t5-base"
 CONFIG_PATH = "configs/base.yaml"
 # Modify the TARGET_DIR to your dataset path
-TARGET_DIR = "data/datasets/agilex/tfrecords/"
+TARGET_DIR = "data/datasets/agilex"
 
 # Note: if your GPU VRAM is less than 24GB, 
 # it is recommended to enable offloading by specifying an offload directory.
@@ -48,7 +50,7 @@ def main():
             instruction_dict = json.load(f_instr)
         instructions = [instruction_dict['instruction']] + instruction_dict['simplified_instruction'] + \
             instruction_dict['expanded_instruction']
-    
+        print(len(instructions))
         # Encode the instructions
         tokenized_res = tokenizer(
             instructions, return_tensors="pt",
@@ -69,6 +71,9 @@ def main():
         # Save the embeddings for training use
         for i in range(len(instructions)):
             text_embed = text_embeds[i][attn_mask[i]]
+            padding_size = 4096 - 768
+            text_embed = F.pad(text_embed, (0, padding_size))
+            #print(text_embed.shape)
             save_path = os.path.join(task_path, f"lang_embed_{i}.pt")
             torch.save(text_embed, save_path)
 

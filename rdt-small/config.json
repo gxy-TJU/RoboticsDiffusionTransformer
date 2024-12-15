@@ -1,0 +1,49 @@
+{
+  "action_dim": 128,
+  "ema": {
+    "inv_gamma": 1.0,
+    "max_value": 0.9999,
+    "min_value": 0.0,
+    "power": 0.75,
+    "update_after_step": 0
+  },
+  "img_adaptor": "mlp2x_gelu",
+  "img_cond_len": 4374,
+  "img_pos_embed_config": [
+    [
+      "image",
+      [
+        2,
+        3,
+        -729
+      ]
+    ]
+  ],
+  "img_token_dim": 1152,
+  "lang_adaptor": "mlp2x_gelu",
+  "lang_pos_embed_config": [
+    [
+      "lang",
+      -1024
+    ]
+  ],
+  "lang_token_dim": 4096,
+  "max_lang_cond_len": 1024,
+  "noise_scheduler": {
+    "beta_schedule": "squaredcos_cap_v2",
+    "clip_sample": false,
+    "num_inference_timesteps": 5,
+    "num_train_timesteps": 1000,
+    "prediction_type": "sample",
+    "type": "ddpm"
+  },
+  "pred_horizon": 64,
+  "rdt": {
+    "cond_pos_embed_type": "multimodal",
+    "depth": 14,
+    "hidden_size": 1024,
+    "num_heads": 32
+  },
+  "state_adaptor": "mlp3x_gelu",
+  "state_token_dim": 128
+}

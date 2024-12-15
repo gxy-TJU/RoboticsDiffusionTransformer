@@ -1,4 +1,3 @@
-#!/home/lin/software/miniconda3/envs/aloha/bin/python
 # -- coding: UTF-8
 """
 #!/usr/bin/python3
@@ -21,10 +20,10 @@ from PIL import Image as PImage
 from sensor_msgs.msg import Image, JointState
 from std_msgs.msg import Header
 import cv2
-
+sys.path.append('/home/gxy/Desktop/workspace/RoboticsDiffusionTransformer')
 from scripts.agilex_model import create_model
-
-# sys.path.append("./")
+import torch.nn.functional as F
+sys.path.append("./")
 
 CAMERA_NAMES = ['cam_high', 'cam_right_wrist', 'cam_left_wrist']
 
@@ -197,13 +196,21 @@ def inference_fn(args, config, policy, t):
         proprio = proprio.unsqueeze(0)
         
         # actions shaped as [1, 64, 14] in format [left, right]
+        
+        print(lang_embeddings.shape)
+        # 计算需要填充的数量
+        padding_size = 4096 - lang_embeddings.size(-1)
+
+        # 使用 F.pad 函数在最后一个维度上进行填充
+        # (left, right, top, bottom, front, back) 对应于各个维度的填充
+        # 这里我们只需要在最后一个维度上填充，所以前四个值为 0
+        lang_embeddings = F.pad(lang_embeddings, (0, padding_size))
         actions = policy.step(
             proprio=proprio,
             images=images,
             text_embeds=lang_embeddings 
         ).squeeze(0).cpu().numpy()
-        # print(f"inference_actions: {actions.squeeze()}")
-        
+        # print(f"inference_actions: {actions.squeeze()}")     
         print(f"Model inference time: {time.time() - time1} s")
         
         # print(f"Finish inference_thread_fn: t={t}")
@@ -636,9 +643,9 @@ def get_arguments():
                         help='Path to the config file')
     # parser.add_argument('--cfg_scale', type=float, default=2.0,
     #                     help='the scaling factor used to modify the magnitude of the control features during denoising')
-    parser.add_argument('--pretrained_model_name_or_path', type=str, required=True, help='Name or path to the pretrained model')
+    parser.add_argument('--pretrained_model_name_or_path', type=str, default="rdt-1b", help='Name or path to the pretrained model')
     
-    parser.add_argument('--lang_embeddings_path', type=str, required=True, 
+    parser.add_argument('--lang_embeddings_path', type=str, default="outs/handover_pan.pt",
                         help='Path to the pre-encoded language instruction embeddings')
     
     args = parser.parse_args()

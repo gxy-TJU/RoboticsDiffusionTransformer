@@ -3,7 +3,7 @@ import os
 from train.train import train
 
 from accelerate.logging import get_logger
-
+import lpmm
 
 def parse_args(input_args=None):
     parser = argparse.ArgumentParser(description="Main script for training RDT.")
@@ -163,7 +163,7 @@ def parse_args(input_args=None):
     parser.add_argument(
         "--precomp_lang_embed",
         action="store_true",
-        default=False,
+        default=True,
         help="Whether or not to use precomputed language embeddings.",
     )
     parser.add_argument(
@@ -194,6 +194,10 @@ def parse_args(input_args=None):
     parser.add_argument(
         "--use_8bit_adam", action="store_true", help="Whether or not to use 8-bit Adam from bitsandbytes."
     )
+    parser.add_argument(
+        "--use_4bit_adam", action="store_true", help="Whether or not to use 4-bit Adam from bitsandbytes."
+    )
+    
     parser.add_argument(
         "--dataloader_num_workers",
         type=int,

@@ -8,7 +8,8 @@ import argparse
 
 import numpy as np
 from tqdm import tqdm
-
+import sys
+sys.path.append('/home/gxy/Desktop/RoboticsDiffusionTransformer')
 from data.hdf5_vla_dataset import HDF5VLADataset
 
 

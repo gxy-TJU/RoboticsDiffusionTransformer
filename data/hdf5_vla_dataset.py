@@ -7,6 +7,9 @@ import yaml
 import cv2
 import numpy as np
 
+import sys
+sys.path.append('/home/gxy/Desktop/RoboticsDiffusionTransformer')
+
 from configs.state_vec import STATE_VEC_IDX_MAPPING
 
 
@@ -144,9 +147,10 @@ class HDF5VLADataset:
             instruction = instruction_dict[instruction_type]
             if isinstance(instruction, list):
                 instruction = np.random.choice(instruction)
-            # You can also use precomputed language embeddings (recommended)
-            # instruction = "path/to/lang_embed.pt"
-            
+            #You can also use precomputed language embeddings (recommended)
+            pre_computed_instruction = os.path.join(dir_path, f"lang_embed_6.pt")
+            instruction = pre_computed_instruction
+            print(instruction)
             # Assemble the meta
             meta = {
                 "dataset_name": self.DATASET_NAME,

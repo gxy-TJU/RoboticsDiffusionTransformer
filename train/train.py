@@ -18,7 +18,7 @@ import logging
 import math
 import os
 from pathlib import Path
-
+import lpmm
 import diffusers
 import torch
 import torch.utils.checkpoint
@@ -215,17 +215,15 @@ def train(args, logger):
 
     # Use 8-bit Adam for lower memory usage or to fine-tune the model in 16GB GPUs
     if args.use_8bit_adam:
-        try:
-            import bitsandbytes as bnb
-        except ImportError:
-            raise ImportError(
-                "To use 8-bit Adam, please install the bitsandbytes library: `pip install bitsandbytes`."
-            )
-
         optimizer_class = bnb.optim.AdamW8bit
     else:
         optimizer_class = torch.optim.AdamW
-
+    # Use 4-bit Adam for lower memory usage or to fine-tune the model in 16GB GPUs
+    if args.use_4bit_adam:
+        optimizer_class = lpmm.optim.AdamW
+        print("Using 4-bit Adam")
+    else:
+        optimizer_class = torch.optim.AdamW
     # Optimizer creation
     params_to_optimize = rdt.parameters()
     optimizer = optimizer_class(
